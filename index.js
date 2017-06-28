@@ -2,7 +2,7 @@ const Bacon = require('baconjs')
 const _ = require('lodash')
 
 module.exports = function(app) {
-  const properties = _.reduce(NMEA_SENTENCES, (result, value) => {
+  const nmeaProperties = _.reduce(_.orderBy(NMEA_SENTENCES, v => v[0]), (result, value) => {
     result[value[0]] = {
       title: value.join(' - '),
       type: 'boolean',
@@ -11,6 +11,21 @@ module.exports = function(app) {
     return result
   }, {})
 
+  const common = {
+    input: {
+      title: 'Input event (internal)',
+      type: 'string',
+      required: true,
+      default: 'nmea0183'
+    },
+    output: {
+      title: 'Output event (internal)',
+      type: 'string',
+      required: true,
+      default: 'nmea0183out'
+    }
+  }
+
   const plugin = {
     id: 'nmea0183-to-nmea0183',
     name: 'Forward and filter any NMEA0183 input to NMEA0183 out',
@@ -18,24 +33,43 @@ module.exports = function(app) {
     schema: {
       type: 'object',
       title: 'Forwarded NMEA0183 sentences',
-      description: 'Forward the following raw NMEA0183 input sentences to NMEA0183 output via `nmea0183out` event',
-      properties
+      properties: {
+        inputs: {
+          type: 'array',
+          title: ' ',
+          items: {
+            title: 'NMEA0183 to NMEA0183',
+            description: 'Forward the following raw NMEA0183 input event sentences to NMEA0183 output via selected event',
+            type: 'object',
+            properties: _.merge({}, common, nmeaProperties)
+          }
+        }
+      }
     },
-    unsubscribe: undefined
+    unsubscribe: []
   }
 
   plugin.start = function(options) {
-    const disabled = _.keys(_.omitBy(options, _.identity))
-    const filtered = Bacon.fromEvent(app.signalk, 'nmea0183')
-      .filter(val => _.every(disabled, sentence => !val.match('^[\$,\!][A-Z]{2}' + sentence))) //.log('BACON EVENT')
+    _.each(options.inputs, options => {
+      const input = _.trim(options.input)
+      const output = _.trim(options.output)
+      if (input === output) {
+        throw 'Can not have same input and output: ' + input
+      }
+      const disabled = _.keys(_.omitBy(_.omit(options , ['input', 'output']), _.identity))
+      const filtered = Bacon.fromEvent(app.signalk, _.trim(input))
+        .filter(val => _.every(disabled, sentence => !val.match('^[\$,\!][A-Z]{2}' + sentence)))
 
-    plugin.unsubscribe = filtered.onValue(val => {
-      app.emit('nmea0183out', val)
+      const unsub = filtered.onValue(val => {
+        app.emit(output, val)
+      })
+      plugin.unsubscribe.push(unsub)
     })
   }
 
   plugin.stop = function(a) {
-    plugin.unsubscribe && plugin.unsubscribe()
+    _.each(plugin.unsubscribe, unsub => unsub())
+    plugin.unsubscribe = []
   }
   return plugin
 }
@@ -79,6 +113,7 @@ const NMEA_SENTENCES = [['AAM', 'Waypoint Arrival Alarm'],
 ['MSK', 'Control for a Beacon Receiver'],
 ['MSS', 'Beacon Receiver Status'],
 ['MTW', 'Mean Temperature of Water'],
+['MWD', 'Wind Direction & Speed'],
 ['MWV', 'Wind Speed and Angle'],
 ['OLN', 'Omega Lane Numbers'],
 ['OSD', 'Own Ship Data'],
@@ -117,4 +152,29 @@ const NMEA_SENTENCES = [['AAM', 'Waypoint Arrival Alarm'],
 ['ZFO', 'UTC & Time from origin Waypoint'],
 ['ZTG', 'UTC & Time to Destination Waypoint'],
 ['VDM', 'Automatic Identification System (AIS) payload'],
-['VDO', 'Automatic Identification System (AIS) payload']]
+['VDO', 'Automatic Identification System (AIS) payload'],
+['ACK', 'Alarm Acknowldgement'],
+['ADS', 'Automatic Device Status'],
+['AKD', 'Acknowledge Detail Alarm Condition'],
+['ALA', 'Set Detail Alarm Condition'],
+['ASD', 'Autopilot System Data'],
+['BEC', 'Bearing & Distance to Waypoint', 'Dead Reckoning'],
+['CEK', 'Configure Encryption Key Command'],
+['COP', 'Configure the Operational Period, Command'],
+['CUR', 'Water Current Layer'],
+['DCR', 'Device Capability Report'],
+['DDC', 'Display Dimming Control'],
+['DOR', 'Door Status Detection'],
+['DSC', 'Digital Selective Calling Information'],
+['DSE', 'Extended DSC'],
+['DSI', 'DSC Transponder Initiate'],
+['DSR', 'DSC Transponder Response'],
+['ETL', 'Engine Telegraph Operation Status'],
+['EVE', 'General Event Message'],
+['FIR', 'Fire Detection'],
+['MWD', 'Wind Direction & Speed'],
+['TLL', 'Target Latitude and Longitude'],
+['WDR', 'Distance to Waypoint - Rhumb Line'],
+['WDC', 'Distance to Waypoint - Great Circle'],
+['ZDL', 'Time and Distance to Variable Point'],
+['VWT', 'True Wind Speed and Angle']]
