@@ -1,0 +1,19 @@
+{
+  "name": "nmea0183-to-nmea0183",
+  "version": "0.0.1",
+  "description": "Signal K Node server plugin to forward and filter NMEA0183 input sentences",
+  "main": "index.js",
+  "keywords": [
+    "signalk-node-server-plugin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vokkim/nmea0183-to-nmea0183.git"
+  },
+  "author": "Mikko Vesikkala",
+  "license": "MIT",
+  "dependencies": {
+    "baconjs": "0.7.94",
+    "lodash": "4.17.4"
+  }
+}
