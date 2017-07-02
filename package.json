@@ -1,6 +1,6 @@
 {
   "name": "nmea0183-to-nmea0183",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Signal K Node server plugin to forward and filter NMEA0183 input sentences",
   "main": "index.js",
   "keywords": [

@@ -16,20 +16,20 @@ module.exports = function(app) {
       title: 'Input event (internal)',
       type: 'string',
       required: true,
-      default: 'nmea0183'
+      default: 'myNMEA0183InputEvent'
     },
     output: {
       title: 'Output event (internal)',
       type: 'string',
       required: true,
-      default: 'nmea0183out'
+      default: 'myNMEA0183OutputEvent'
     }
   }
 
   const plugin = {
     id: 'nmea0183-to-nmea0183',
-    name: 'Forward and filter any NMEA0183 input to NMEA0183 out',
-    description: 'Plugin to forward and filter NMEA0183 sentences to serial port. ',
+    name: 'Forward and filter NMEA0183 input to NMEA0183 out',
+    description: 'Plugin to forward and filter NMEA0183 sentences to serial port.',
     schema: {
       type: 'object',
       title: 'Forwarded NMEA0183 sentences',
@@ -39,7 +39,7 @@ module.exports = function(app) {
           title: ' ',
           items: {
             title: 'NMEA0183 to NMEA0183',
-            description: 'Forward the following raw NMEA0183 input event sentences to NMEA0183 output via selected event',
+            description: 'Forward the following NMEA0183 input events to NMEA0183 output.',
             type: 'object',
             properties: _.merge({}, common, nmeaProperties)
           }
@@ -57,7 +57,7 @@ module.exports = function(app) {
         throw 'Can not have same input and output: ' + input
       }
       const disabled = _.keys(_.omitBy(_.omit(options , ['input', 'output']), _.identity))
-      const filtered = Bacon.fromEvent(app.signalk, _.trim(input))
+      const filtered = Bacon.fromEvent(app, _.trim(input))
         .filter(val => _.every(disabled, sentence => !val.match('^[\$,\!][A-Z]{2}' + sentence)))
 
       const unsub = filtered.onValue(val => {

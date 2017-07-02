@@ -4,13 +4,27 @@ Signal K Node server plugin to filter and forward NMEA0183 sentences.
 
 ## Usage
 
-1. Activate the plugin and add a new configuration block that lists all NMEA0183 
+
+1. Add NMEA0183 provider to SignalK configuration with a `sentenceEvent` option:
+
+```
+  },{
+    "type": "providers/nmea0183-signalk",
+    "options":{
+      "sentenceEvent": "myNMEA0183InputEvent"
+    },
+    "optionMappings": [
+      ...
+    ]
+  }, {
+ ```
+
+2. Activate the plugin and add a new configuration block that lists all NMEA0183
 sentences and describes the internal SignalK server `input` and `output` events. 
-`nmea0183-signalk` parser emits `nmea0183` event by default.
 
-<a href='https://user-images.githubusercontent.com/1435910/27655267-76220d18-5c4d-11e7-9477-8b5e74d5fbc2.png'><img src='https://user-images.githubusercontent.com/1435910/27655267-76220d18-5c4d-11e7-9477-8b5e74d5fbc2.png' width='600px'/></a>
+<a href='https://user-images.githubusercontent.com/1435910/27770068-10ba1596-5f41-11e7-8b60-a5c1226208d1.png'><img src='https://user-images.githubusercontent.com/1435910/27770068-10ba1596-5f41-11e7-8b60-a5c1226208d1.png' width='600px'/></a>
 
-2. Add SignalK configuration to forward sentences to specific `serialport` configuration with matching `toStdout`:
+3. Add SignalK configuration to forward sentences to specific `serialport` configuration with matching `toStdout`:
 
 ```
 ...
@@ -21,7 +35,7 @@ sentences and describes the internal SignalK server `input` and `output` events.
       "options": {
         "device": "/dev/nmea-digyacht",
         "baudrate": 4800,
-        "toStdout": "filteredNmea0183out"
+        "toStdout": ["myNMEA0183OutputEvent"]
       }
     }, {
 ...
