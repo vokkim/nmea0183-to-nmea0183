@@ -23,9 +23,9 @@ module.exports = function(app) {
       if (input === output) {
         throw 'Can not have same input and output: ' + input
       }
-      const filtered = Bacon.fromEvent(app, input)
+      const unsub = Bacon.fromEvent(app, input)
         .filter(createFilter(options.nmea))
-      const unsub = filtered.onValue(_.partial(app.emit, [output]))
+        .onValue(val => app.emit(output, val))
       plugin.unsubscribe.push(unsub)
     }, options.inputs)
   }

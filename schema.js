@@ -18,7 +18,7 @@ const nmeaProperties = _.reduce(_.orderBy(NMEA_SENTENCES, v => v[0]), (result, v
   result[value[0]] = {
     title: value.join(' - '),
     type: 'boolean',
-    default: false
+    // default: false
   }
   return result
 }, {})

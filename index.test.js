@@ -7,9 +7,10 @@ const app = {
 }
 const options = {
   inputs: [
-    { input: 'nmea', output: 'nmeaout', nmea: { HDG: true, BAR: false, BAZ: true } },
+    { input: 'nmea', output: 'nmeaout', nmea: { HDG: true, BAR: false, BAZ: true, VDO: true } },
   ]
 }
+
 describe('plugin', () => {
   const plugin = getPlugin(app)
   test('hasPluginProps', () => {
@@ -36,15 +37,16 @@ describe('plugin', () => {
     const output = app.emit.mock.calls[0]
     expect(output[0]).toBe('nmeaout')
     expect(output[1]).toBe('$SDHDG,218.7,,,8.7,W*24')
+    input('!AIVDO,2,2,1,,888888883,2*65')
     input('$SDBAR,218.7,,,8.7,W*24')
     input('$SDHDG')
-    expect(app.emit.mock.calls.length).toBe(1)
+    expect(app.emit.mock.calls.length).toBe(2)
   })
   test('plugin stop removes handlers', () => {
     plugin.stop()
     const input = app.on.mock.calls[0][1]
     input('$SDHDG,218.7,,,8.7,W*24')
-    expect(app.emit.mock.calls.length).toBe(1)
+    expect(app.emit.mock.calls.length).toBe(2)
     // const unsubscribed = app.removeListener.mock.calls
     // console.log(unsubscribed)
     // expect(unsubscribed.length).toBe(1)
