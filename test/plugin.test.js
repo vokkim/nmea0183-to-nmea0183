@@ -1,5 +1,5 @@
 const { isFunction, isObject } = require('lodash/fp')
-const getPlugin = require('./index')
+const getPlugin = require('../index')
 const app = {
   emit: jest.fn(),
   on: jest.fn(),

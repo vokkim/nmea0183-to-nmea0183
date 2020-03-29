@@ -4,7 +4,6 @@ const { schema, validate } = require('./schema')
 const { createFilter } = require('./utils')
 
 module.exports = function(app) {
-
   const plugin = {
     id: 'nmea0183-to-nmea0183',
     name: 'Forward and filter NMEA0183 input to NMEA0183 out',

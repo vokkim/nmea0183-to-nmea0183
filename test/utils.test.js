@@ -1,5 +1,5 @@
 const { isFunction } = require('lodash/fp')
-const { createFilter, getHeader, getHeaderType, getType } = require('./utils')
+const { createFilter, getHeader, getHeaderType, getType } = require('../utils')
 
 /* globals describe test expect */
 
