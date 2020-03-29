@@ -14,13 +14,13 @@ module.exports = function(app) {
 
   plugin.start = function(options) {
     if (!validate(options)) {
-      throw 'Plugin nmea0183-to-nmea0183 sent invalid props. Check schema.'
+      throw new Error('Plugin nmea0183-to-nmea0183 sent invalid props. Check schema.')
     }
     _.each(options => {
       const input = _.trim(options.input)
       const output = _.trim(options.output)
       if (input === output) {
-        throw 'Can not have same input and output: ' + input
+        throw new Error(`Can not have same input and output: ${input}`)
       }
       const unsub = Bacon.fromEvent(app, input)
         .filter(createFilter(options.nmea))

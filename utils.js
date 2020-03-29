@@ -9,9 +9,7 @@ const createFilter = _.flow(
   _.propertyOf,
   _.partial(_.flow, [getType])
 )
+
 module.exports = {
-  createFilter,
-  getHeader,
-  getHeaderType,
-  getType,
+  createFilter
 }

@@ -47,9 +47,6 @@ describe('plugin', () => {
     const input = app.on.mock.calls[0][1]
     input('$SDHDG,218.7,,,8.7,W*24')
     expect(app.emit.mock.calls.length).toBe(2)
-    // const unsubscribed = app.removeListener.mock.calls
-    // console.log(unsubscribed)
-    // expect(unsubscribed.length).toBe(1)
     expect(plugin.unsubscribe.length).toBe(0)
   })
 })

@@ -18,7 +18,7 @@ const nmeaProperties = _.reduce(_.orderBy(NMEA_SENTENCES, v => v[0]), (result, v
   result[value[0]] = {
     title: value.join(' - '),
     type: 'boolean',
-    // default: false
+    default: true
   }
   return result
 }, {})
@@ -29,13 +29,7 @@ const nmea = {
   type: 'object',
   properties: nmeaProperties,
 }
-const nmeaEventItem = {
-  title: 'NMEA0183 to NMEA0183',
-  description: 'Forward the following NMEA0183 input events to NMEA0183 output.',
-  type: 'object',
-  properties: { input, output, nmea },
-  required: ['input', 'output', 'nmea'],
-}
+
 const schema = {
   title: 'Forwarded NMEA0183 sentences',
   type: 'object',
@@ -43,14 +37,20 @@ const schema = {
     inputs: {
       type: 'array',
       title: 'Input Events',
-      items: nmeaEventItem,
+      items: {
+        title: 'NMEA0183 to NMEA0183',
+        description: 'Forward the following NMEA0183 input events to NMEA0183 output.',
+        type: 'object',
+        properties: { input, output, nmea },
+        required: ['input', 'output', 'nmea'],
+      }
     }
   }
 }
+
 const validate = ajv.compile(schema)
 
 module.exports = {
   validate,
   schema,
 }
-// console.log(JSON.stringify(schema, null, 2))
